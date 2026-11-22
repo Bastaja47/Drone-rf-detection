@@ -1,5 +1,3 @@
-                                                                                                                                       
-
 """
 drone_dataset.py
 
@@ -12,6 +10,8 @@ import torch
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
 
+from config import DATASET_PATH, SPLIT_PATH
+
 
 class DroneRFDataset(Dataset):
     """
@@ -20,6 +20,8 @@ class DroneRFDataset(Dataset):
     """
 
     def __init__(self, data_dict, indices):
+        # Cuvamo reference na ceo tenzor i samo spisak indeksa za ovaj skup,
+        # pa train/val/test dele iste podatke u memoriji (nema kopiranja)
         self.x_spec = data_dict['x_spec']
         self.y = data_dict['y']
         self.indices = indices
@@ -34,7 +36,7 @@ class DroneRFDataset(Dataset):
         return spectrogram, label
 
 
-def load_data_and_splits(data_path='dataset.pt', split_path='train_val_test_split.npz'):
+def load_data_and_splits(data_path=DATASET_PATH, split_path=SPLIT_PATH):
     """
     Učitava ceo dataset i sačuvanu train/val/test podelu.
     Vraća: data (dict), train_indices, val_indices, test_indices
@@ -55,6 +57,7 @@ def get_dataloaders(batch_size=64, num_workers=0):
     val_dataset = DroneRFDataset(data, val_idx)
     test_dataset = DroneRFDataset(data, test_idx)
 
+    # Mesamo samo trening podatke; val i test ostaju u fiksnom redosledu
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)

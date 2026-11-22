@@ -16,7 +16,7 @@ def train_with_early_stopping(model, train_loader, val_loader, criterion, optimi
 
     Prati validacioni loss kroz epohe. Ako se val_loss ne poboljsa kroz
     'patience' uzastopnih epoha, trening se prekida - dalje treniranje
-    bi samo overfitovalo - to mi se desilo prvi pit
+    bi samo overfitovalo - to mi se desilo prvi put
 
     Čuva najbolje težine modela (na osnovu najnižeg val_loss), ne poslednje
     epohe - ovo rešava problem koji smo primetili (poslednja epoha nije
@@ -33,7 +33,8 @@ def train_with_early_stopping(model, train_loader, val_loader, criterion, optimi
     history = {'train_loss': [], 'train_acc': [], 'val_loss': [], 'val_acc': []}
 
     for epoch in range(max_epochs):
-                              
+
+        # --- Trening deo epohe ---
         model.train()
         running_loss = 0.0
         correct = 0
@@ -49,6 +50,8 @@ def train_with_early_stopping(model, train_loader, val_loader, criterion, optimi
             loss.backward()
             optimizer.step()
 
+            # loss.item() je prosek po batch-u, pa ga mnozimo velicinom batch-a
+            # da bi na kraju dobili tacan prosek po uzorku
             running_loss += loss.item() * batch_specs.size(0)
             _, predicted = torch.max(outputs, dim=1)
             correct += (predicted == batch_labels).sum().item()
@@ -57,7 +60,7 @@ def train_with_early_stopping(model, train_loader, val_loader, criterion, optimi
         epoch_train_loss = running_loss / total
         epoch_train_acc = correct / total
 
-                                  
+        # --- Validacioni deo epohe (bez racunanja gradijenata) ---
         model.eval()
         val_running_loss = 0.0
         val_correct = 0
@@ -84,13 +87,11 @@ def train_with_early_stopping(model, train_loader, val_loader, criterion, optimi
         history['val_loss'].append(epoch_val_loss)
         history['val_acc'].append(epoch_val_acc)
 
-                                       
+        # --- Early stopping: pamtimo najbolje tezine do sada ---
         if epoch_val_loss < best_val_loss:
-                                                                             
             best_val_loss = epoch_val_loss
             epochs_without_improvement = 0
-                                                                              
-                                                                 
+            # Kopija na CPU-u, jer se state_dict() menja dok model dalje uci
             best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
             marker = " <- NOVI NAJBOLJI"
         else:

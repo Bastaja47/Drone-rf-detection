@@ -1,13 +1,11 @@
 # Virtuelno okruzenje
 venv/
+.venv/
 __pycache__/
 *.pyc
 
-# Dataset - PREVELIK za git (desetine GB) (link u README.md)
+# Dataset - PREVELIK za git (link u README.md)
 dataset.pt
-
-
-_backup_sa_komentarima/
 
 # Jupyter
 .ipynb_checkpoints/
@@ -15,6 +13,3 @@ _backup_sa_komentarima/
 # OS specificno
 .DS_Store
 Thumbs.db
-
-Projekat (1).pdf
-Sta je uradjeno/

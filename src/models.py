@@ -13,6 +13,8 @@ class ConfigurableCNN(nn.Module):
     CNN arhitektura sa podesivim brojem conv slojeva, filtera i dropout-a.
     Ovo je arhitektura koju je Optuna optimizovala - koristimo je za finalni,
     servirani model (pokazala se bolja od BaselineCNN u evaluaciji).
+
+    Ulaz: [batch, 2, 128, 128] (spektrogram sa 2 kanala), izlaz: [batch, 7] (logiti za 7 klasa).
     """
 
     def __init__(self, num_conv_layers=3, base_filters=16, dropout_rate=0.3, num_classes=7):
@@ -20,6 +22,7 @@ class ConfigurableCNN(nn.Module):
         self.conv_layers = nn.ModuleList()
         in_channels = 2
         current_filters = base_filters
+        # Svaki sledeci conv sloj ima duplo vise filtera od prethodnog
         for i in range(num_conv_layers):
             self.conv_layers.append(nn.Conv2d(in_channels, current_filters, kernel_size=3, padding=1))
             in_channels = current_filters
@@ -27,6 +30,7 @@ class ConfigurableCNN(nn.Module):
 
         self.relu = nn.ReLU()
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+        # Svaki pooling prepolovi sirinu i visinu (128 -> 64 -> 32 ...), odatle velicina za fc1
         final_spatial_size = 128 // (2 ** num_conv_layers)
         flattened_size = in_channels * final_spatial_size * final_spatial_size
         self.flatten = nn.Flatten()
