@@ -119,7 +119,7 @@ Poređenje na **validacionom skupu** (na njemu su birani i hiperparametri i epoh
 | Macro Recall | 84.21% | **87.21%** |
 | DJI Recall (najteža klasa) | 69.00% | **77.81%** |
 
-AutoML model (Optuna, 20 trial-ova) je pronašao arhitekturu sa 4 konvoluciona sloja, 32 bazna filtera, dropout 0.222, learning rate 0.0007. Poboljšanje u odnosu na baseline je najizraženije kod retkih klasa i pri niskom SNR-u (zašumljeni signali) — detaljna analiza u `notebooks/05_evaluation.ipynb`.
+AutoML model (Optuna, 20 trial-ova) je pronašao arhitekturu sa 4 konvoluciona sloja, 32 bazna filtera, dropout 0.222, learning rate 0.0007. Poboljšanje u odnosu na baseline je najizraženije kod retkih klasa i pri niskom SNR-u (zašumljeni signali)  detaljna analiza u `notebooks/05_evaluation.ipynb`.
 
 **Gde model greši:** skoro sve greške idu ka klasi Noise, što je posledica niskog SNR-a (signal prekriven šumom). Klase FutabaT7 i FutabaT14 se mešaju međusobno (isti proizvođač, sličan protokol).
 
